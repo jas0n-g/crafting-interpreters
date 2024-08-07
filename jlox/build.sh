@@ -5,5 +5,5 @@ javac -d . *.java
 
 if [ "$1" = "run" ]; then
     shift
-    java hello.java "$@"
+    java Lox.java "$@"
 fi
