@@ -1,4 +1,4 @@
-package com.craftinginterpreters.lox;
+package jlox;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,6 +7,10 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
+
+import jlox.TokenType;
+import jlox.Token;
+import jlox.Scanner;
 
 public class Lox {
     static boolean hadError = false;
@@ -68,7 +72,8 @@ public class Lox {
     }
 
     private static void report(int line, String where, String message) {
-        System.err.println("[line " + line "] Error" + where + ": " + message);
+        System.err.println("[line " + line + "] Error" + where + ": " +
+                           message);
         hadError = true;
     }
 }

@@ -1,24 +1,46 @@
-package com.craftinginterpreters.lox;
+package jlox;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.Util.Map;
+import java.util.Map;
 
-import static com.craftinginterpreters.lox.TokenType.*;
+import static jlox.TokenType.*;
 
-class Scanner {
+public class Scanner {
     private final String source;
     private final List<Token> tokens = new ArrayList<>();
     private int start = 0;
     private int current = 0;
     private int line = 1;
 
-    Scanner (String source) {
+    // reserved words:
+    private static final Map<String, TokenType> keywords;
+    static {
+        keywords = new HashMap<>();
+        keywords.put("and",    AND);
+        keywords.put("class",  CLASS);
+        keywords.put("else",   ELSE);
+        keywords.put("false",  FALSE);
+        keywords.put("for",    FOR);
+        keywords.put("fn",     FN);
+        keywords.put("if",     IF);
+        keywords.put("nil",    NIL);
+        keywords.put("or",     OR);
+        keywords.put("print",  PRINT);
+        keywords.put("return", RETURN);
+        keywords.put("super",  SUPER);
+        keywords.put("this",   THIS);
+        keywords.put("true",   TRUE);
+        keywords.put("var",    VAR);
+        keywords.put("while",  WHILE);
+    }
+
+    public Scanner (String source) {
         this.source = source;
     }
 
-    List<Token> scanTokens() {
+    public List<Token> scanTokens() {
         while (!isAtEnd()) {
             // the code here happens when at the start of a lexeme
             start = current;
@@ -61,7 +83,7 @@ class Scanner {
                 // different because slashes start comments
                 if (match('/')) {
                     // comments go until the end of a line
-                    while (peek() != '\n' && !isAtEnd()) advance;
+                    while (peek() != '\n' && !isAtEnd()) advance();
                 } else {
                     addToken(SLASH);
                 }
@@ -76,10 +98,21 @@ class Scanner {
             case '\n':
                 line++;
                 break;
+            
+            // string literals
+            case '"': string(); break;
 
             // unexpected characters
             default:
-                Lox.error(line, "Unexpected character.");
+                if (isDigit(c)) {
+                    // it's a number
+                    number();
+                } else if (isAlpha(c)) {
+                    // it's a reserved word / identifier
+                    identifier();
+                } else {
+                    Lox.error(line, "Unexpected character.");
+                }
                 break;
         }
     }
@@ -115,5 +148,66 @@ class Scanner {
         // like advance() but doesn't consume a character
         if (isAtEnd()) return '\0';
         return source.charAt(current);
+    }
+
+    private char peekNext() {
+        // the second character of lookahead
+        if (current + 1 >= source.length()) return '\0';
+        return source.charAt(current + 1);
+    }
+
+    private boolean isDigit(char c) {
+        return c >= '0' && c <= '9';
+    }
+
+    private boolean isAlpha(char c) {
+        return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_';
+    }
+
+    private boolean isAlphaNumeric(char c) {
+        return isAlpha(c) || isDigit(c);
+    }
+
+    private void string() {
+        while (peek() != '"' && !isAtEnd()) {
+            if (peek() == '\n') line++;
+            advance();
+        }
+
+        if (isAtEnd()) {
+            Lox.error(line, "Unterminated string.");
+            return;
+        }
+
+        // when we reach the closing "
+        advance();
+
+        // get the contents of the string and save a token of it
+        String value = source.substring(start + 1, current - 1);
+        addToken(STRING, value);
+    }
+
+    private void number() {
+        while (isDigit(peek())) advance();
+
+        // look for a decimal
+        if (peek() == '.' && isDigit(peekNext())) {
+            // consume the .
+            advance();
+
+            while (isDigit(peek())) advance();
+        }
+
+        // numbers are doubles in this interpreter
+        addToken(NUMBER, Double.parseDouble(source.substring(start, current)));
+    }
+
+    private void identifier() {
+        while (isAlphaNumeric(peek())) advance();
+
+        String text = source.substring(start, current);
+        TokenType type = keywords.get(text);
+        if (type == null) type = IDENTIFIER;
+        addToken(type);
     }
 }

@@ -1,18 +1,18 @@
-package com.craftinginterpreters.lox;
+package jlox;
 
 enum TokenType {
     // single-character tokens
     LEFT_PAREN, RIGHT_PAREN, LEFT_BRACE, RIGHT_BRACE, COMMA, DOT, MINUS, PLUS,
-    SEMICOLON, SLASH, STAR
+    SEMICOLON, SLASH, STAR,
 
     // one or two character tokens
     BANG, BANG_EQUAL,
-    EQUAL, EQUAL_EQUAL
-    GREATER, GREATER_EQUAL
-    LESS, LESS_EQUAL
+    EQUAL, EQUAL_EQUAL,
+    GREATER, GREATER_EQUAL,
+    LESS, LESS_EQUAL,
 
     // literals
-    IDENTIFIER, STRING, NUMBER
+    IDENTIFIER, STRING, NUMBER,
 
     // keywords
     AND, CLASS, ELSE, FALSE, FN, FOR, IF, NIL, OR, PRINT, RETURN, SUPER, THIS,
