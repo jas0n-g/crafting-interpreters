@@ -5,4 +5,4 @@ My reading of the
 by Robert Nystrom.
 
 Current Bookmark:
-[4.6.1 - String Literals](https://craftinginterpreters.com/scanning.html#string-literals)
+[5 - Representing Code](https://craftinginterpreters.com/representing-code.html)
