@@ -5,4 +5,4 @@ My reading of the
 by Robert Nystrom.
 
 Current Bookmark:
-[5 - Representing Code](https://craftinginterpreters.com/representing-code.html)
+[5.3 - Working with Trees](https://craftinginterpreters.com/representing-code.html#working-with-trees)
