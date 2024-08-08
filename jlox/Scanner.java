@@ -84,6 +84,24 @@ public class Scanner {
                 if (match('/')) {
                     // comments go until the end of a line
                     while (peek() != '\n' && !isAtEnd()) advance();
+                } else if (match('*')) {
+                    // multi line comments (must be terminated)
+                    int mlcScope = 1;
+
+                    while (mlcScope != 0) {
+                        if (isAtEnd()) {
+                            Lox.error(line, "unterminated multi-line commment");
+                        } else if (peek() == '*' && peekNext() == '/') {
+                            mlcScope--;
+                        } else if (peek() == '/' && peekNext() == '*') {
+                            mlcScope++;
+                        } else if (peek() == '\n') {
+                            line++;
+                        }
+
+                        advance();
+                    }
+                    advance();
                 } else {
                     addToken(SLASH);
                 }
